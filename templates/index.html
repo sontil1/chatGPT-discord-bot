@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sontil AI Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>body { background-color: #343541; color: white; }</style>
+</head>
+<body class="flex flex-col h-screen">
+    <header class="p-4 border-b border-gray-600 text-center font-bold text-xl">Sontil AI (Llama & GPT)</header>
+    <div id="chat-box" class="flex-1 overflow-y-auto p-4 space-y-4">
+        <div class="bg-gray-700 p-3 rounded-lg max-w-[85%]">Halo! Saya AI di ai.sontil.eu.org. Ada yang bisa saya bantu?</div>
+    </div>
+    <div class="p-4 bg-gray-800 border-t border-gray-600">
+        <div class="max-w-4xl mx-auto flex gap-2">
+            <input id="user-input" type="text" class="flex-1 p-3 rounded bg-gray-700 outline-none" placeholder="Tanya sesuatu...">
+            <button onclick="send()" class="bg-green-600 px-6 py-2 rounded font-bold hover:bg-green-700">Kirim</button>
+        </div>
+    </div>
+    <script>
+        async function send() {
+            const input = document.getElementById('user-input');
+            const box = document.getElementById('chat-box');
+            if (!input.value) return;
+            const msg = input.value; input.value = '';
+            box.innerHTML += `<div class="bg-blue-600 p-3 rounded-lg self-end ml-auto max-w-[85%]">${msg}</div>`;
+            const res = await fetch('/ask', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message: msg})
+            });
+            const data = await res.json();
+            box.innerHTML += `<div class="bg-gray-700 p-3 rounded-lg max-w-[85%]"><b>[${data.model}]:</b><br>${data.reply}</div>`;
+            box.scrollTop = box.scrollHeight;
+        }
+    </script>
+</body>
+</html>
