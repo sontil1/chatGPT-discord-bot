@@ -16,11 +16,10 @@ class DiscordClient(discord.Client):
         self.tree = app_commands.CommandTree(self)
         self.provider_manager = ProviderManager()
         
-        # Tambahkan kembali atribut ini supaya tidak error 'is_replying_all'
+        # Atribut wajib agar tidak error
         self.is_replying_all = os.getenv("REPLYING_ALL", "False") == "True"
         self.replying_all_discord_channel_id = os.getenv("REPLYING_ALL_DISCORD_CHANNEL_ID")
         
-        # Set provider ke FREE
         self.provider_manager.set_current_provider(ProviderType.FREE)
         self.current_model = "gpt-3.5-turbo"
         self.conversation_history = []
@@ -40,7 +39,6 @@ class DiscordClient(discord.Client):
         if message.author == self.user:
             return
 
-        # Logika deteksi pesan (Mention atau DM)
         is_mentioned = self.user in message.mentions
         is_dm = isinstance(message.channel, discord.DMChannel)
         
@@ -50,26 +48,28 @@ class DiscordClient(discord.Client):
                 await self.send_message(message, content)
 
     async def send_message(self, message, user_message):
-        author_id = message.user.id if hasattr(message, 'user') else message.author.id
+        """Kirim pesan TANPA 'followup' agar tidak error"""
+        author_id = message.author.id
         
         try:
             async with message.channel.typing():
                 response = await self.handle_response(user_message)
                 final_text = f'> **{user_message}** - <@{author_id}> \n\n{response}'
-                await send_split_message(self, final_text, message)
+                
+                # Pakai cara kirim paling dasar yang pasti berhasil
+                await message.channel.send(final_text)
+                
         except Exception as e:
-            logger.error(f"Gagal kirim pesan: {e}")
-            await message.channel.send("❌ Provider AI sedang sibuk. Coba kirim pesan lagi.")
+            logger.error(f"Gagal total: {e}")
+            await message.channel.send("❌ AI sedang pusing, coba tanya sekali lagi.")
 
     async def handle_response(self, user_message: str) -> str:
-        # Simpan history singkat
         self.conversation_history.append({'role': 'user', 'content': user_message})
-        if len(self.conversation_history) > 6:
-            self.conversation_history = self.conversation_history[-6:]
+        if len(self.conversation_history) > 4:
+            self.conversation_history = self.conversation_history[-4:]
             
         try:
             provider = self.provider_manager.get_provider()
-            # Mencoba memanggil AI
             response = await provider.chat_completion(
                 messages=self.conversation_history,
                 model=None 
@@ -78,11 +78,10 @@ class DiscordClient(discord.Client):
             if response:
                 self.conversation_history.append({'role': 'assistant', 'content': response})
                 return response
-            return "Maaf, AI tidak merespon. Coba lagi."
+            return "Provider sedang offline. Coba lagi sebentar lagi."
             
         except Exception as e:
             logger.error(f"AI Error: {e}")
-            return "❌ Semua provider gratis sedang penuh. Tunggu sebentar lalu coba lagi."
+            return "❌ Provider gratisan lagi penuh. Coba chat lagi ya."
 
-# Instance wajib
 discordClient = DiscordClient()
