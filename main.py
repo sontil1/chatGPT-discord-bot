@@ -1,4 +1,5 @@
 import os
+import asyncio
 from flask import Flask
 from threading import Thread
 from dotenv import load_dotenv
@@ -41,6 +42,12 @@ if __name__ == "__main__":
         print("Starting web server for Koyeb...")
         keep_alive()
         
-        # JALANKAN BOT DISCORD
+        # JALANKAN BOT DISCORD DENGAN ASYNCIO
         print("Starting Discord bot...")
-        run_discord_bot()
+        try:
+            # Ini adalah perubahan kuncinya:
+            asyncio.run(run_discord_bot())
+        except KeyboardInterrupt:
+            print("Bot stopped by user.")
+        except Exception as e:
+            logger.error(f"Failed to start bot: {e}")
