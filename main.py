@@ -1,53 +1,36 @@
+import threading
 import os
 import asyncio
-from flask import Flask
-from threading import Thread
-from dotenv import load_dotenv
-from src.bot import run_discord_bot
-from src.log import logger
+from flask import Flask, render_template, request, jsonify
+from src.aclient import discordClient
+from src.providers import ProviderManager
 
-# --- AWAL KODE PENJAGA PORT (FLASK) ---
-app = Flask('')
+app = Flask(__name__)
+pm = ProviderManager()
 
 @app.route('/')
-def home():
-    return "Bot is alive and healthy!"
+def index():
+    # Menampilkan tampilan chat ala ChatGPT
+    return render_template('index.html')
 
-def run():
-    # Ini yang akan menjawab Port 8000 di Koyeb
-    app.run(host='0.0.0.0', port=8000)
+@app.route('/ask', methods=['POST'])
+def ask():
+    data = request.json
+    user_msg = data.get("message", "")
+    # Menjalankan AI dengan sistem Llama -> GPT Backup
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    res = loop.run_until_complete(pm.get_response_with_backup([{"role": "user", "content": user_msg}]))
+    return jsonify({"reply": res["text"], "model": res["name"]})
 
-def keep_alive():
-    t = Thread(target=run)
-    t.start()
-# --- AKHIR KODE PENJAGA PORT ---
-
-def validate_environment():
-    """Validate required environment variables"""
-    required_vars = ["DISCORD_BOT_TOKEN"]
-    missing_vars = []
-    for var in required_vars:
-        if not os.getenv(var):
-            missing_vars.append(var)
-    if missing_vars:
-        logger.error(f"Missing required environment variables: {', '.join(missing_vars)}")
-        return False
-    return True
+def run_discord():
+    token = os.environ.get("DISCORD_TOKEN")
+    if token:
+        discordClient.run(token)
 
 if __name__ == "__main__":
-    load_dotenv()
-    
-    if validate_environment():
-        # JALANKAN PENJAGA PORT DI BACKGROUND
-        print("Starting web server for Koyeb...")
-        keep_alive()
-        
-        # JALANKAN BOT DISCORD DENGAN ASYNCIO
-        print("Starting Discord bot...")
-        try:
-            # Ini adalah perubahan kuncinya:
-            asyncio.run(run_discord_bot())
-        except KeyboardInterrupt:
-            print("Bot stopped by user.")
-        except Exception as e:
-            logger.error(f"Failed to start bot: {e}")
+    # Menjalankan Discord Bot tanpa mengganggu Website
+    threading.Thread(target=run_discord, daemon=True).start()
+    # Port 8000 adalah standar agar Koyeb terdeteksi Healthy
+    port = int(os.environ.get("PORT", 8000))
+    app.run(host='0.0.0.0', port=port)
