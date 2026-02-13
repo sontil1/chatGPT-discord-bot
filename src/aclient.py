@@ -14,9 +14,10 @@ class DiscordClient(discord.Client):
         self.conversation_history = []
 
     async def on_ready(self):
-        logger.info(f'{self.user} aktif dalam mode Dual AI!')
+        logger.info(f'{self.user} aktif dengan sistem Backup AI!')
 
     async def on_message(self, message):
+        # Jangan balas pesan sendiri
         if message.author == self.user:
             return
 
@@ -26,40 +27,45 @@ class DiscordClient(discord.Client):
         if is_mentioned or is_dm:
             content = message.content.replace(f'<@{self.user.id}>', '').strip()
             if content:
-                await self.send_dual_response(message, content)
+                await self.send_message_logic(message, content)
 
-    async def send_dual_response(self, message, user_message):
+    async def send_message_logic(self, message, user_message):
         author_id = message.author.id
         try:
             async with message.channel.typing():
+                # Simpan riwayat chat (maksimal 8 pesan terakhir)
                 self.conversation_history.append({'role': 'user', 'content': user_message})
                 if len(self.conversation_history) > 8:
                     self.conversation_history = self.conversation_history[-8:]
 
-                # Panggil Groq untuk dapat jawaban dari kedua AI
-                all_answers = await self.provider_manager.get_all_responses(self.conversation_history)
+                # Panggil fungsi Failover dari providers.py
+                result = await self.provider_manager.get_response_with_backup(self.conversation_history)
                 
-                # Kirim header pertanyaan dulu
-                await message.channel.send(f'> **{user_message}** - <@{author_id}>')
-                await asyncio.sleep(1) # Jeda kecil agar tidak spamming
+                ai_name = result["name"]
+                ai_text = result["text"]
 
-                for ai_name, ai_text in all_answers.items():
-                    full_response = f"**🤖 MODEL: {ai_name}**\n{ai_text}"
-                    
-                    if len(full_response) <= 2000:
-                        await message.channel.send(full_response)
-                    else:
-                        # Jika kepanjangan, pecah jadi beberapa halaman
-                        chunks = self.split_text(full_response, 1900)
-                        for index, chunk in enumerate(chunks):
-                            label = f"\n*(Lanjut {ai_name} hal. {index+2}...)*" if index < len(chunks)-1 else ""
-                            await message.channel.send(chunk + label)
-                            await asyncio.sleep(1.5) # Jeda per halaman
+                # Header informasi model
+                header = f'> **{user_message}** - <@{author_id}> *(Model: {ai_name})*\n\n'
+                full_text = header + ai_text
 
-                    await asyncio.sleep(2) # JEDA WAJIB antar model agar tidak kena Error 429
+                # Logika Kirim: Cek apakah lebih dari 2000 karakter
+                if len(full_text) <= 2000:
+                    await message.channel.send(full_text)
+                else:
+                    # Pecah jadi beberapa halaman jika terlalu panjang
+                    chunks = self.split_text(full_text, 1900)
+                    for index, chunk in enumerate(chunks):
+                        label = f"\n\n*(Lanjut ke hal. {index+2}...)*" if index < len(chunks) - 1 else ""
+                        await message.channel.send(chunk + label)
+                        await asyncio.sleep(1.2) # Jeda agar tidak kena rate limit
+
+                # Simpan jawaban ke history jika sukses
+                if result["success"]:
+                    self.conversation_history.append({'role': 'assistant', 'content': ai_text})
 
         except Exception as e:
-            logger.error(f"Gagal kirim: {e}")
+            logger.error(f"Gagal mengirim pesan: {e}")
+            await message.channel.send("❌ Terjadi gangguan mendadak pada sistem bot.")
 
     def split_text(self, text, limit):
         chunks = []
