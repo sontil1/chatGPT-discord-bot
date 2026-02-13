@@ -78,7 +78,7 @@ class FreeProvider(BaseProvider):
                 'name': 'Blackbox'
             },
             {
-                'provider': g4f.Provider.ChatgptNext,
+                'provider': g4f.Provider.Bing,
                 'models': ['gpt-3.5-turbo', 'gpt-4'],
                 'name': 'Chatai'
             },
