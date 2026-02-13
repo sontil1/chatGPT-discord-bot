@@ -7,15 +7,16 @@ class ProviderType(Enum):
 
 class ProviderManager:
     def __init__(self):
-        self.current_provider = g4f.Provider.Bing
+        # Gunakan huruf kecil 'bing'
+        self.current_provider = g4f.Provider.bing
 
     async def chat_completion(self, messages, model=None):
-        # Daftar provider cadangan yang paling stabil
+        # Daftar provider dengan penulisan yang benar (huruf kecil)
         providers = [
-            g4f.Provider.Bing,
-            g4f.Provider.ChatgptNext,
+            g4f.Provider.bing,
+            g4f.Provider.DuckDuckGo,
             g4f.Provider.Liaobots,
-            g4f.Provider.GigaChat
+            g4f.Provider.FreeNetfly
         ]
         
         for provider in providers:
