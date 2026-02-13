@@ -7,31 +7,32 @@ class ProviderType(Enum):
 
 class ProviderManager:
     def __init__(self):
-        # Gunakan huruf kecil semua
-        self.current_provider = g4f.Provider.bing
+        # Kita set ke None agar sistem otomatis memilih yang aktif
+        self.current_provider = None
 
     async def chat_completion(self, messages, model=None):
-        # Daftar provider stabil dengan format huruf kecil semua
-        providers = [
-            g4f.Provider.bing,
-            g4f.Provider.duckduckgo,
-            g4f.Provider.blackbox,
-            g4f.Provider.liaobots,
-            g4f.Provider.yqcloud
-        ]
+        # Daftar nama provider dalam bentuk teks (string) agar tidak error attribute
+        provider_names = ["Bing", "DuckDuckGo", "Blackbox", "Liaobots", "FreeChatgpt"]
         
-        for provider in providers:
+        for name in provider_names:
             try:
-                logger.info(f"Mencoba provider: {provider.__name__}")
-                response = await g4f.ChatCompletion.create_async(
-                    model=g4f.models.default,
-                    messages=messages,
-                    provider=provider
-                )
-                if response and len(str(response)) > 0:
-                    return response
+                logger.info(f"Mencoba provider: {name}")
+                # Memanggil provider berdasarkan nama string
+                provider_obj = getattr(g4f.Provider, name, None)
+                
+                if provider_obj:
+                    response = await g4f.ChatCompletion.create_async(
+                        model=g4f.models.default,
+                        messages=messages,
+                        provider=provider_obj
+                    )
+                    if response and len(str(response)) > 0:
+                        return response
+                else:
+                    continue
+                    
             except Exception as e:
-                logger.error(f"Provider {provider.__name__} gagal, geser ke berikutnya...")
+                logger.error(f"Provider {name} gagal: {e}")
                 continue
         
         raise Exception("Semua provider sedang sibuk.")
