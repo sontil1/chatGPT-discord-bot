@@ -3,21 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sontil AI Chat</title>
+    <title>Sontil AI Chat - Layanan AI Pintar & Cepat</title>
+    <meta name="description" content="Sontil AI Chat di ai.sontil.eu.org adalah layanan chatbot pintar berbasis Llama 3.3. Tanya apa saja gratis dan cepat.">
+    
+    <script src="https://pl28710734.effectivegatecpm.com/0e/56/5d/0e565d7c5c5ab381e354dd8283b27e86.js"></script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://pl28710734.effectivegatecpm.com/0e/56/5d/0e565d7c5c5ab381e354dd8283b27e86.js"></script>
+    
     <style>
-        body { background-color: #343541; color: white; overflow: hidden; }
-        #chat-box { height: calc(100vh - 280px); scroll-behavior: smooth; }
+        body { background-color: #343541; color: white; margin: 0; font-family: sans-serif; }
+        
+        /* Area Chat tetap fixed agar enak dilihat */
+        #chat-container { height: 70vh; position: sticky; top: 0; background: #343541; z-index: 10; }
+        #chat-box { height: 100%; overflow-y: auto; scroll-behavior: smooth; padding: 20px; }
+        
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #343541; }
         ::-webkit-scrollbar-thumb { background: #565869; border-radius: 10px; }
         
-        /* Gaya khusus untuk hasil Markdown agar rapi */
+        /* Markdown Styling */
         .markdown-content p { margin-bottom: 1rem; }
         .markdown-content ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 1rem; }
-        .markdown-content bold { font-weight: bold; }
         
         .typing-dot {
             display: inline-block; width: 6px; height: 6px;
@@ -27,29 +35,50 @@
         @keyframes wave { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
     </style>
 </head>
-<body class="flex flex-col h-screen">
-    <header class="p-4 border-b border-gray-600 text-center font-bold text-xl bg-[#343541] shadow-md">
+<body class="flex flex-col">
+
+    <header class="p-4 border-b border-gray-600 text-center font-bold text-xl bg-[#343541] shadow-md sticky top-0 z-20">
         Sontil AI Chat
     </header>
 
-    <div id="chat-box" class="overflow-y-auto p-4 flex flex-col gap-4">
-        <div class="bg-gray-700 p-3 rounded-lg max-w-[85%] shadow-md border-l-4 border-gray-500">
-            Halo! Saya AI di <b>ai.sontil.eu.org</b>. Ada yang bisa saya bantu?
+    <div id="chat-container">
+        <div id="chat-box" class="flex flex-col gap-4">
+            <div class="bg-gray-700 p-3 rounded-lg max-w-[85%] shadow-md border-l-4 border-gray-500">
+                Selamat datang di <b>ai.sontil.eu.org</b>! Mau tanya apa hari ini?
+            </div>
         </div>
     </div>
 
-    <div class="p-4 pb-32 bg-[#343541] border-t border-gray-600 shadow-2xl">
+    <div class="p-4 bg-[#343541] border-t border-gray-600 shadow-2xl sticky z-20">
         <div class="max-w-4xl mx-auto flex flex-col gap-3">
             <div class="flex gap-2">
                 <input id="user-input" type="text" 
                        class="flex-1 p-4 rounded-2xl bg-gray-700 border border-gray-600 outline-none focus:border-green-500 transition-all text-white shadow-inner" 
-                       placeholder="Tanya sesuatu dan tekan Enter..." autocomplete="off">
+                       placeholder="Tanya sesuatu..." autocomplete="off">
                 <button onclick="send()" class="bg-green-600 px-6 py-2 rounded-2xl font-bold hover:bg-green-700 transition-all active:scale-95 shadow-lg">
                     Kirim
                 </button>
             </div>
             <p class="text-center text-[12px] text-gray-400 font-semibold tracking-wider">
                 Status: Bot is Healthy & <span class="text-green-500">Powered by Sontil</span>
+            </p>
+        </div>
+    </div>
+
+    <div class="bg-[#2b2c35] text-gray-300 p-8">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-2xl font-bold text-white mb-4">Mengenal Sontil AI: Chatbot Cerdas Masa Kini</h2>
+            <p class="mb-4">
+                Sontil AI hadir melalui domain <b>ai.sontil.eu.org</b> untuk memberikan akses kecerdasan buatan kelas dunia secara gratis. Menggunakan teknologi Llama 3.3, chatbot ini dirancang untuk menjawab segala kebutuhan informasi Anda dengan cepat dan akurat.
+            </p>
+            <h3 class="text-xl font-semibold text-green-400 mb-2">Keunggulan ai.sontil.eu.org</h3>
+            <ul class="list-disc ml-6 mb-4 space-y-2">
+                <li><b>Respon Instan:</b> Tidak perlu menunggu lama untuk mendapatkan jawaban.</li>
+                <li><b>Format Rapi:</b> Jawaban disajikan dengan struktur yang mudah dibaca.</li>
+                <li><b>Optimasi Sontil:</b> Sistem yang stabil dan selalu online 24 jam.</li>
+            </ul>
+            <p class="text-sm italic text-gray-500 border-t border-gray-700 pt-4">
+                Nikmati kemudahan bertanya pada AI hanya di platform resmi Powered by Sontil.
             </p>
         </div>
     </div>
@@ -85,7 +114,6 @@
                 const data = await res.json();
                 document.getElementById(loadingId).remove();
 
-                // Memproses teks jawaban AI dengan marked.parse agar Markdown berfungsi
                 const formattedReply = marked.parse(data.reply);
 
                 box.innerHTML += `
@@ -95,7 +123,7 @@
                     </div>`;
                 box.scrollTop = box.scrollHeight;
             } catch (error) {
-                document.getElementById(loadingId).innerHTML = `<span class="text-red-400 italic">Koneksi terputus.</span>`;
+                document.getElementById(loadingId).innerHTML = `<span class="text-red-400">Gagal terhubung ke server.</span>`;
             }
         }
     </script>
