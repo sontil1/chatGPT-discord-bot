@@ -7,29 +7,31 @@ class ProviderType(Enum):
 
 class ProviderManager:
     def __init__(self):
-        # Gunakan huruf kecil 'bing'
+        # Gunakan huruf kecil semua
         self.current_provider = g4f.Provider.bing
 
     async def chat_completion(self, messages, model=None):
-        # Daftar provider dengan penulisan yang benar (huruf kecil)
+        # Daftar provider stabil dengan format huruf kecil semua
         providers = [
             g4f.Provider.bing,
-            g4f.Provider.DuckDuckGo,
-            g4f.Provider.Liaobots,
-            g4f.Provider.FreeNetfly
+            g4f.Provider.duckduckgo,
+            g4f.Provider.blackbox,
+            g4f.Provider.liaobots,
+            g4f.Provider.yqcloud
         ]
         
         for provider in providers:
             try:
+                logger.info(f"Mencoba provider: {provider.__name__}")
                 response = await g4f.ChatCompletion.create_async(
                     model=g4f.models.default,
                     messages=messages,
                     provider=provider
                 )
-                if response and len(response) > 0:
+                if response and len(str(response)) > 0:
                     return response
             except Exception as e:
-                logger.error(f"Provider {provider.__name__} gagal, mencoba yang lain...")
+                logger.error(f"Provider {provider.__name__} gagal, geser ke berikutnya...")
                 continue
         
         raise Exception("Semua provider sedang sibuk.")
