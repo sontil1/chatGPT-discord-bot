@@ -74,52 +74,24 @@ class DiscordClient(discord.Client):
         await self.message_queue.put((message, user_message))
 
     async def send_message(self, message, user_message):
+        """Kirim respon ke user dengan aman"""
+        # Tentukan ID author (apakah dari Slash Command atau Chat Biasa)
         author = message.user.id if hasattr(message, 'user') else message.author.id
+        
         try:
+            # Ambil respon dari AI
             response = await self.handle_response(user_message)
             response_content = f'> **{user_message}** - <@{str(author)}> \n\n{response}'
+            
+            # Kirim pesan (split jika terlalu panjang)
             await send_split_message(self, response_content, message)
+            
         except Exception as e:
-            logger.exception(f"Error while sending: {e}")
-            error_msg = f"❌ Error: {str(e)}"
-            await message.channel.send(error_msg)
-
-    async def handle_response(self, user_message: str) -> str:
-        self.conversation_history.append({'role': 'user', 'content': user_message})
-        provider = self.provider_manager.get_provider()
-        try:
-            response = await provider.chat_completion(
-                messages=self.conversation_history,
-                model=self.current_model if self.current_model != "auto" else None
-            )
-            self.conversation_history.append({'role': 'assistant', 'content': response})
-            return response
-        except Exception as e:
-            logger.error(f"Provider error: {e}")
-            return "❌ Maaf, sedang terjadi gangguan pada koneksi AI."
-
-    def switch_provider(self, provider_type: ProviderType, model: Optional[str] = None):
-        self.provider_manager.set_current_provider(provider_type)
-        if model: self.current_model = model
-
-    # --- BAGIAN YANG TADI HILANG ---
-    async def on_ready(self):
-        logger.info(f'{self.user} is now running!')
-        await self.tree.sync()
-        self.loop.create_task(self.process_messages())
-
-    async def on_message(self, message):
-        if message.author == self.user:
-            return
-
-        is_mentioned = self.user in message.mentions
-        is_dm = isinstance(message.channel, discord.DMChannel)
-        
-        if is_mentioned or is_dm:
-            content = message.content.replace(f'<@{self.user.id}>', '').strip()
-            if not content: return
-            self.current_channel = message.channel
-            await self.enqueue_message(message, content)
-
-# Baris terakhir tetap mepet kiri
-discordClient = DiscordClient()
+            logger.exception(f"Error saat mengirim pesan: {e}")
+            error_msg = f"❌ Terjadi kesalahan internal."
+            
+            # Cek cara kirim error yang benar supaya tidak muncul 'followup' error lagi
+            if hasattr(message, 'channel'):
+                await message.channel.send(error_msg)
+            elif hasattr(message, 'followup'):
+                await message.followup.send(error_msg)
