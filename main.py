@@ -5,29 +5,42 @@ from dotenv import load_dotenv
 from src.bot import run_discord_bot
 from src.log import logger
 
-# 1. SETUP FLASK UNTUK MENIPU KOYEB (Agar Port 8000 Aktif)
+# --- AWAL KODE PENJAGA PORT (FLASK) ---
 app = Flask('')
 
 @app.route('/')
 def home():
-    return "Bot is Online!"
+    return "Bot is alive and healthy!"
 
 def run():
-    # Koyeb akan senang karena port 8000 sekarang ada isinya
+    # Ini yang akan menjawab Port 8000 di Koyeb
     app.run(host='0.0.0.0', port=8000)
 
 def keep_alive():
     t = Thread(target=run)
     t.start()
+# --- AKHIR KODE PENJAGA PORT ---
 
-# 2. JALANKAN BOT SEPERTI BIASA
+def validate_environment():
+    """Validate required environment variables"""
+    required_vars = ["DISCORD_BOT_TOKEN"]
+    missing_vars = []
+    for var in required_vars:
+        if not os.getenv(var):
+            missing_vars.append(var)
+    if missing_vars:
+        logger.error(f"Missing required environment variables: {', '.join(missing_vars)}")
+        return False
+    return True
+
 if __name__ == "__main__":
     load_dotenv()
     
-    # Panggil Flask di background
-    print("Starting Flask web server...")
-    keep_alive()
-    
-    # Jalankan bot Discord kamu
-    print("Starting Discord bot...")
-    run_discord_bot()
+    if validate_environment():
+        # JALANKAN PENJAGA PORT DI BACKGROUND
+        print("Starting web server for Koyeb...")
+        keep_alive()
+        
+        # JALANKAN BOT DISCORD
+        print("Starting Discord bot...")
+        run_discord_bot()
