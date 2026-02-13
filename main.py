@@ -1,55 +1,33 @@
-#!/usr/bin/env python3
 import os
+from flask import Flask
+from threading import Thread
 from dotenv import load_dotenv
 from src.bot import run_discord_bot
 from src.log import logger
 
-load_dotenv()
+# 1. SETUP FLASK UNTUK MENIPU KOYEB (Agar Port 8000 Aktif)
+app = Flask('')
 
-def validate_environment():
-    """Validate required environment variables"""
-    required_vars = ["DISCORD_BOT_TOKEN"]
-    missing_vars = []
-    
-    for var in required_vars:
-        if not os.getenv(var):
-            missing_vars.append(var)
-    
-    if missing_vars:
-        logger.error(f"Missing required environment variables: {', '.join(missing_vars)}")
-        logger.error("Please check your .env file")
-        return False
-    
-    providers = []
-    if os.getenv("OPENAI_KEY"):
-        providers.append("OpenAI")
-    if os.getenv("CLAUDE_KEY"):
-        providers.append("Claude")
-    if os.getenv("GEMINI_KEY"):
-        providers.append("Gemini")
-    if os.getenv("GROK_KEY"):
-        providers.append("Grok")
-    
-    providers.append("Free (always available)")
-    
-    logger.info(f"Available providers: {', '.join(providers)}")
-    
-    return True
+@app.route('/')
+def home():
+    return "Bot is Online!"
 
-def main():
-    """Main entry point"""
-    logger.info("Starting Discord AI Bot...")
-    
-    if not validate_environment():
-        return
-    
-    logger.info("Free provider configured - no authentication required")
-    
-    try:
-        run_discord_bot()
-    except Exception as e:
-        logger.error(f"Bot crashed: {e}")
-        raise
+def run():
+    # Koyeb akan senang karena port 8000 sekarang ada isinya
+    app.run(host='0.0.0.0', port=8000)
 
+def keep_alive():
+    t = Thread(target=run)
+    t.start()
+
+# 2. JALANKAN BOT SEPERTI BIASA
 if __name__ == "__main__":
-    main()
+    load_dotenv()
+    
+    # Panggil Flask di background
+    print("Starting Flask web server...")
+    keep_alive()
+    
+    # Jalankan bot Discord kamu
+    print("Starting Discord bot...")
+    run_discord_bot()
