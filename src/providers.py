@@ -159,6 +159,13 @@ class ProviderManager:
             key = os.getenv(env)
             if key: self.providers[ptype] = pclass(key)
 
+    def set_current_provider(self, provider_type: ProviderType):
+        """Fungsi ini yang tadi hilang dan bikin error"""
+        if provider_type in self.providers:
+            self.current_provider = provider_type
+        else:
+            logger.warning(f"Provider {provider_type} tidak tersedia, tetap menggunakan {self.current_provider}")
+
     def get_provider(self, ptype: Optional[ProviderType] = None) -> BaseProvider:
         return self.providers.get(ptype or self.current_provider, self.providers[ProviderType.FREE])
 
