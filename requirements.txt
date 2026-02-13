@@ -1,9 +1,9 @@
-discord.py==2.4.0
+discord.py
 python-dotenv==1.0.1
 asgiref==3.8.1
 openai==1.66.2
 selenium==4.28.1
-g4f==0.3.2.9
+g4f==0.3.3.0
 g4f[all]
 google-generativeai==0.8.3
 anthropic==0.42.0
