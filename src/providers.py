@@ -1,13 +1,16 @@
 import g4f
-import asyncio
+from enum import Enum
 from src.log import logger
+
+class ProviderType(Enum):
+    FREE = "free"
 
 class ProviderManager:
     def __init__(self):
-        self.current_provider = g4f.Provider.Bing # Default ke Bing karena biasanya stabil
+        self.current_provider = g4f.Provider.Bing
 
     async def chat_completion(self, messages, model=None):
-        # Daftar provider cadangan yang biasanya lancar
+        # Daftar provider cadangan yang paling stabil
         providers = [
             g4f.Provider.Bing,
             g4f.Provider.ChatgptNext,
@@ -34,4 +37,4 @@ class ProviderManager:
         return self
 
     def set_current_provider(self, provider_type):
-        pass # Di-disable sementara agar otomatis cari yang aktif
+        pass
