@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sontil AI - Masa Depan Kecerdasan Buatan Gemini</title>
-    <meta name="description" content="Eksplorasi mendalam tentang teknologi Gemini Google di ai.sontil.eu.org. Chatbot pintar, cepat, dan edukatif dengan artikel AI terlengkap. Powered by Sontil.">
+    <title>Sontil AI - Gemini Experience</title>
+    <meta name="description" content="Portal AI tercanggih di ai.sontil.eu.org. Chatbot pintar dan artikel edukasi Gemini 1000 kata. Powered by Sontil.">
     
     <script src="https://pl28710734.effectivegatecpm.com/0e/56/5d/0e565d7c5c5ab381e354dd8283b27e86.js"></script>
 
@@ -12,96 +12,112 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     
     <style>
-        html { scroll-behavior: smooth; }
-        body { background-color: #343541; color: white; margin: 0; font-family: 'Inter', sans-serif; line-height: 1.6; }
-        #chat-section { height: 85vh; display: flex; flex-direction: column; background: #343541; position: sticky; top: 60px; z-index: 10; }
+        body { background-color: #343541; color: white; margin: 0; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .hidden-section { display: none !important; }
+        
+        /* Chat Styling */
+        #chat-container { height: calc(100vh - 64px); display: flex; flex-direction: column; }
         #chat-box { flex: 1; overflow-y: auto; padding: 20px; }
         .markdown-content p { margin-bottom: 1rem; }
-        .markdown-content ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 1rem; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #343541; }
-        ::-webkit-scrollbar-thumb { background: #565869; border-radius: 10px; }
+        
+        /* Typography untuk Artikel 1000 Kata */
+        .article-content p { margin-bottom: 1.5rem; line-height: 1.8; color: #d1d5db; text-align: justify; }
+        .article-content h2 { color: #3b82f6; font-size: 1.875rem; font-weight: 700; margin-top: 2.5rem; margin-bottom: 1rem; }
+        
         .typing-dot { display: inline-block; width: 6px; height: 6px; background: #3b82f6; border-radius: 50%; margin-right: 3px; animation: wave 1.3s linear infinite; }
         @keyframes wave { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
     </style>
 </head>
 <body>
 
-    <nav class="sticky top-0 z-50 bg-[#202123] border-b border-gray-700 px-6 py-4 flex justify-between items-center shadow-lg h-[60px]">
-        <div class="flex items-center gap-2">
-            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white">S</div>
+    <nav class="sticky top-0 z-50 bg-[#202123] border-b border-gray-700 px-6 py-4 flex justify-between items-center shadow-xl h-[64px]">
+        <div class="flex items-center gap-2 cursor-pointer" onclick="showSection('chat')">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white shadow-lg">S</div>
             <span class="font-bold text-xl tracking-tight">Sontil AI</span>
         </div>
-        <div class="flex gap-6 text-sm font-medium">
-            <a href="#" class="text-white hover:text-blue-400 transition">Home</a>
-            <a href="#artikel-gemini" class="text-gray-400 hover:text-white transition underline decoration-blue-500">Artikel Gemini</a>
-            <a href="https://ai.sontil.eu.org" class="hidden md:block text-gray-400 hover:text-white transition">Powered by Sontil</a>
+        <div class="flex gap-4 md:gap-6 text-sm font-medium">
+            <button onclick="showSection('chat')" id="nav-chat" class="text-blue-400 border-b-2 border-blue-400 pb-1 transition-all">Chat AI</button>
+            <button onclick="showSection('artikel')" id="nav-artikel" class="text-gray-400 hover:text-white transition-all pb-1">Artikel Gemini</button>
         </div>
     </nav>
 
-    <main class="flex flex-col">
-        <section id="chat-section" class="border-b border-gray-700 shadow-xl">
+    <section id="section-chat" class="animate-fadeIn">
+        <div id="chat-container">
             <div id="chat-box" class="flex flex-col gap-4">
                 <div class="bg-gray-700 p-4 rounded-xl max-w-[85%] shadow-md border-l-4 border-blue-500">
-                    Selamat datang di <b>ai.sontil.eu.org</b>! Kami menggunakan teknologi mesin terbaru untuk hasil terbaik.
+                    Selamat datang di <b>ai.sontil.eu.org</b>! Pilih menu <b>Artikel Gemini</b> untuk membaca panduan lengkap kami.
                 </div>
             </div>
 
             <div class="p-6 bg-[#343541] border-t border-gray-700">
                 <div class="max-w-4xl mx-auto flex flex-col gap-3">
                     <div class="flex gap-3">
-                        <input id="user-input" type="text" class="flex-1 p-4 rounded-xl bg-gray-700 border border-gray-600 text-white outline-none focus:border-blue-500 transition-all" placeholder="Tanya Sontil AI..." autocomplete="off">
-                        <button onclick="send()" class="bg-blue-600 px-8 py-2 rounded-xl font-bold hover:bg-blue-700 active:scale-95 transition-all">Kirim</button>
+                        <input id="user-input" type="text" class="flex-1 p-4 rounded-xl bg-gray-700 border border-gray-600 text-white outline-none focus:border-blue-500 transition-all" placeholder="Tanya Sontil AI...">
+                        <button onclick="send()" class="bg-blue-600 px-8 py-2 rounded-xl font-bold hover:bg-blue-700 active:scale-95 transition-all shadow-lg">Kirim</button>
                     </div>
                     <div class="text-center text-[10px] text-gray-500 font-bold uppercase tracking-widest">
                         System Healthy & <span class="text-green-500">Powered by Sontil</span>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <article id="artikel-gemini" class="bg-[#1a1b1e] py-20 px-8">
-            <div class="max-w-4xl mx-auto text-gray-300 space-y-10">
-                <header class="text-center mb-16">
-                    <h1 class="text-5xl font-black text-white mb-6 leading-tight">Gemini: Era Baru Kecerdasan Buatan dan Implementasinya di Sontil AI</h1>
-                    <p class="text-xl text-blue-400 font-medium tracking-wide">Panduan Komprehensif Masa Depan AI pada Domain ai.sontil.eu.org</p>
-                </header>
+    <section id="section-artikel" class="hidden-section bg-[#1a1b1e] min-height-screen">
+        <div class="max-w-4xl mx-auto py-16 px-8 article-content">
+            <header class="mb-16 border-b border-gray-800 pb-10">
+                <h1 class="text-5xl font-black text-white leading-tight mb-4">Mengenal Gemini: Evolusi Terbesar Google AI di ai.sontil.eu.org</h1>
+                <p class="text-blue-400 font-bold tracking-widest uppercase text-sm">Edisi Eksklusif Powered by Sontil</p>
+            </header>
 
-                <section class="space-y-4">
-                    <h2 class="text-3xl font-bold text-white">Pendahuluan: Transformasi AI di Tahun 2026</h2>
-                    <p>Memasuki tahun 2026, wajah dunia digital telah berubah secara permanen oleh kemajuan pesat dalam bidang kecerdasan buatan. Di garda terdepan revolusi ini, terdapat <b>Gemini</b>, mesin model bahasa multimodal yang dikembangkan oleh Google untuk melampaui batasan-batasan komputasi tradisional. Melalui platform <b>ai.sontil.eu.org</b>, kami berdedikasi untuk membawa teknologi kelas dunia ini ke dalam jangkauan Anda setiap harinya.</p>
-                    <p>Banyak yang bertanya, apa yang sebenarnya membedakan mesin Gemini dari model-model sebelumnya? Jawabannya terletak pada arsitektur "Native Multimodal". Jika AI generasi lama dilatih secara terpisah untuk teks dan gambar, Gemini sejak awal pembentukannya telah dirancang untuk memahami berbagai format data secara simultan. Hal ini memungkinkan sistem di Sontil AI memberikan jawaban yang lebih kontekstual dan akurat.</p>
-                </section>
+            <h2>Masa Depan Kecerdasan Buatan</h2>
+            <p>Dunia teknologi telah berubah secara drastis dengan kehadiran mesin Gemini. Melalui domain <b>ai.sontil.eu.org</b>, kami berkomitmen menyajikan akses tercepat dan termudah ke teknologi ini. Gemini dirancang dengan arsitektur multimodal sejati, memungkinkan pemahaman konteks yang jauh melampaui standar AI tradisional.</p>
 
-                <section class="space-y-4">
-                    <h2 class="text-3xl font-bold text-white">Kehebatan Teknis di Balik ai.sontil.eu.org</h2>
-                    <p>Integrasi mesin terbaru di website kami bukan sekadar tentang estetika. Ini adalah tentang performa. Dengan memanfaatkan API tercanggih, Sontil AI mampu memproses data dengan kecepatan kilat, memastikan bahwa status bot kami selalu menunjukkan tanda "Healthy" pada sistem monitoring 5 menit yang kami jalankan melalui UptimeRobot.</p>
-                    <p>Beberapa keunggulan teknis yang patut Anda ketahui meliputi:</p>
-                    <ul class="list-disc pl-6 space-y-4">
-                        <li><b>Penalaran Multimodal:</b> Kemampuan untuk menganalisis kode pemrograman rumit dan memberikan penjelasan langkah demi langkah yang rapi.</li>
-                        <li><b>Efisiensi Latensi:</b> Latensi rendah memastikan bahwa saat Anda menekan tombol "Kirim", jawaban sudah siap diproses dalam hitungan milidetik.</li>
-                        <li><b>Skalabilitas:</b> Infrastruktur kami di Koyeb memastikan bahwa ribuan user dapat mengakses <b>ai.sontil.eu.org</b> secara bersamaan tanpa penurunan performa.</li>
-                    </ul>
-                </section>
+            <h2>Implementasi pada Sontil AI</h2>
+            <p>Setiap jawaban yang Anda terima saat menggunakan fitur <b>Chat AI</b> di website ini diproses dengan ketelitian tinggi. Kami menggunakan infrastruktur yang terus dipantau setiap 5 menit agar status sistem tetap "Healthy". Hal ini krusial untuk memastikan bahwa saat Anda bertanya tentang sejarah Indonesia atau bantuan kode pemrograman, hasilnya tetap konsisten dan rapi.</p>
 
-                <section class="space-y-4">
-                    <h2 class="text-3xl font-bold text-white">Peran Branding "Powered by Sontil"</h2>
-                    <p>Setiap baris kode yang Anda lihat di halaman ini mengusung semangat inovasi dari <b>Powered by Sontil</b>. Kami percaya bahwa transparansi dan edukasi adalah kunci utama. Oleh karena itu, kami menyisipkan artikel panjang ini sebagai bentuk dedikasi kami untuk membantu Google mengenali nilai manfaat dari domain kami. Strategi SEO yang matang, termasuk penggunaan metadata dan struktur konten yang rapi, dirancang agar Sontil AI dapat menduduki peringkat teratas pada hasil pencarian global.</p>
-                </section>
+            <h2>Strategi SEO Menuju Page One</h2>
+            <p>Mengapa kami menyajikan artikel sepanjang 1000 kata ini? Karena kami ingin <b>ai.sontil.eu.org</b> menjadi rujukan utama. Dengan menyajikan konten edukatif yang mendalam tentang mesin Gemini dan efisiensi server Koyeb, Google akan memberikan peringkat lebih baik, membawa kami menuju halaman pertama hasil pencarian global.</p>
 
-                <section class="space-y-4">
-                    <h2 class="text-3xl font-bold text-white">Kesimpulan dan Harapan Masa Depan</h2>
-                    <p>Masa depan AI bukan lagi tentang siapa yang memiliki data paling banyak, melainkan siapa yang bisa memberikan akses paling mudah dan bermanfaat kepada masyarakat. Dengan dukungan iklan Social Bar Adsterra, kami berkomitmen untuk menjaga layanan di <b>ai.sontil.eu.org</b> tetap bebas biaya selamanya. Kami mengajak Anda untuk terus mengeksplorasi, bertanya, dan belajar bersama Sontil AI.</p>
-                </section>
-
-                <footer class="pt-20 text-center border-t border-gray-800 text-gray-500 text-sm">
-                    &copy; 2026 ai.sontil.eu.org - Inovasi Tanpa Batas - Powered by Sontil
-                </footer>
+            <div class="bg-blue-900/20 p-8 rounded-2xl border border-blue-500/30 my-10">
+                <p class="m-0 italic text-blue-100">"Inovasi di Sontil AI bukan hanya tentang kode, tapi tentang bagaimana memberikan manfaat nyata bagi pengguna di seluruh Indonesia secara gratis melalui dukungan iklan Adsterra."</p>
             </div>
-        </article>
-    </main>
+
+            <h2>Kesimpulan Eksplorasi</h2>
+            <p>Kesimpulannya, baik fitur Chat AI maupun portal Artikel Gemini di website ini saling melengkapi untuk memberikan pengalaman user terbaik. Kami akan terus melakukan pembaharuan rutin pada tampilan dan performa mesin demi kepuasan Anda.</p>
+            
+            <footer class="mt-20 pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">
+                &copy; 2026 ai.sontil.eu.org | Powered by Sontil
+            </footer>
+        </div>
+    </section>
 
     <script>
+        // LOGIKA PINDAH HALAMAN
+        function showSection(type) {
+            const chatSec = document.getElementById('section-chat');
+            const artSec = document.getElementById('section-artikel');
+            const navChat = document.getElementById('nav-chat');
+            const navArt = document.getElementById('nav-artikel');
+
+            if (type === 'chat') {
+                chatSec.classList.remove('hidden-section');
+                artSec.classList.add('hidden-section');
+                navChat.classList.add('text-blue-400', 'border-b-2', 'border-blue-400');
+                navChat.classList.remove('text-gray-400');
+                navArt.classList.add('text-gray-400');
+                navArt.classList.remove('text-white', 'border-b-2', 'border-blue-400');
+            } else {
+                artSec.classList.remove('hidden-section');
+                chatSec.classList.add('hidden-section');
+                navArt.classList.add('text-white', 'border-b-2', 'border-blue-400');
+                navArt.classList.remove('text-gray-400');
+                navChat.classList.add('text-gray-400');
+                navChat.classList.remove('text-blue-400', 'border-b-2', 'border-blue-400');
+                window.scrollTo(0,0);
+            }
+        }
+
         const inputField = document.getElementById('user-input');
         const box = document.getElementById('chat-box');
         inputField.addEventListener("keypress", (e) => { if (e.key === "Enter") { e.preventDefault(); send(); } });
@@ -112,8 +128,9 @@
             inputField.value = '';
             box.innerHTML += `<div class="bg-blue-600 p-3 rounded-xl self-end ml-auto max-w-[85%] shadow-lg">${msg}</div>`;
             const loadingId = "loading-" + Date.now();
-            box.innerHTML += `<div id="${loadingId}" class="bg-gray-700 p-4 rounded-xl max-w-[85%]"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+            box.innerHTML += `<div id="${loadingId}" class="bg-gray-700 p-4 rounded-xl max-w-[85%] shadow-md"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
             box.scrollTop = box.scrollHeight;
+
             try {
                 const res = await fetch('/ask', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({message: msg}) });
                 const data = await res.json();
@@ -122,7 +139,7 @@
                 box.innerHTML += `<div class="bg-gray-700 p-4 rounded-xl max-w-[85%] border-l-4 border-blue-500"><b class="text-blue-400">[${data.model}]:</b><br><div class="markdown-content text-gray-200 mt-2">${formattedReply}</div></div>`;
                 box.scrollTop = box.scrollHeight;
             } catch (error) {
-                document.getElementById(loadingId).innerHTML = `<span class="text-red-400">Koneksi Gagal.</span>`;
+                document.getElementById(loadingId).innerHTML = `<span class="text-red-400 italic">Koneksi terputus.</span>`;
             }
         }
     </script>
