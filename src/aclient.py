@@ -14,7 +14,7 @@ class DiscordClient(discord.Client):
         self.conversation_history = []
 
     async def on_ready(self):
-        logger.info(f'{self.user} sudah online! Mode: Dual AI Response.')
+        logger.info(f'{self.user} aktif dalam mode Dual AI!')
 
     async def on_message(self, message):
         if message.author == self.user:
@@ -32,34 +32,34 @@ class DiscordClient(discord.Client):
         author_id = message.author.id
         try:
             async with message.channel.typing():
-                # Simpan history
                 self.conversation_history.append({'role': 'user', 'content': user_message})
-                if len(self.conversation_history) > 10:
-                    self.conversation_history = self.conversation_history[-10:]
+                if len(self.conversation_history) > 8:
+                    self.conversation_history = self.conversation_history[-8:]
 
-                # Ambil jawaban dari semua AI
+                # Panggil Groq untuk dapat jawaban dari kedua AI
                 all_answers = await self.provider_manager.get_all_responses(self.conversation_history)
                 
-                # Kirim header pertanyaan
+                # Kirim header pertanyaan dulu
                 await message.channel.send(f'> **{user_message}** - <@{author_id}>')
+                await asyncio.sleep(1) # Jeda kecil agar tidak spamming
 
-                # Kirim jawaban masing-masing AI
                 for ai_name, ai_text in all_answers.items():
                     full_response = f"**🤖 MODEL: {ai_name}**\n{ai_text}"
                     
-                    # Cek limit 2000 karakter per AI
                     if len(full_response) <= 2000:
                         await message.channel.send(full_response)
                     else:
+                        # Jika kepanjangan, pecah jadi beberapa halaman
                         chunks = self.split_text(full_response, 1900)
                         for index, chunk in enumerate(chunks):
-                            label = f"\n*(Bersambung {ai_name}...)*" if index < len(chunks)-1 else ""
+                            label = f"\n*(Lanjut {ai_name} hal. {index+2}...)*" if index < len(chunks)-1 else ""
                             await message.channel.send(chunk + label)
-                            await asyncio.sleep(1)
+                            await asyncio.sleep(1.5) # Jeda per halaman
+
+                    await asyncio.sleep(2) # JEDA WAJIB antar model agar tidak kena Error 429
 
         except Exception as e:
-            logger.error(f"Gagal kirim dual response: {e}")
-            await message.channel.send("❌ Terjadi kesalahan teknis saat memanggil para AI.")
+            logger.error(f"Gagal kirim: {e}")
 
     def split_text(self, text, limit):
         chunks = []
