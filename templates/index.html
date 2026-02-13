@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sontil AI Chat</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://pl28710734.effectivegatecpm.com/0e/56/5d/0e565d7c5c5ab381e354dd8283b27e86.js"></script>
     <style>
         body { background-color: #343541; color: white; overflow: hidden; }
         /* Area Chat Box */
         #chat-box { 
-            height: calc(100vh - 200px); 
+            height: calc(100vh - 280px); 
             scroll-behavior: smooth;
         }
         /* Custom Scrollbar */
@@ -17,47 +18,40 @@
         ::-webkit-scrollbar-track { background: #343541; }
         ::-webkit-scrollbar-thumb { background: #565869; border-radius: 10px; }
         
-        /* Animasi Loading sederhana */
+        /* Animasi Loading */
         .typing-dot {
-            display: inline-block;
-            width: 6px;
-            height: 6px;
-            background: #10a37f;
-            border-radius: 50%;
-            margin-right: 3px;
+            display: inline-block; width: 6px; height: 6px;
+            background: #10a37f; border-radius: 50%; margin-right: 3px;
             animation: wave 1.3s linear infinite;
         }
-        .typing-dot:nth-child(2) { animation-delay: -1.1s; }
-        .typing-dot:nth-child(3) { animation-delay: -0.9s; }
-        @keyframes wave {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-4px); }
-        }
+        @keyframes wave { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
     </style>
 </head>
 <body class="flex flex-col h-screen">
-    <header class="p-4 border-b border-gray-600 text-center font-bold text-xl bg-[#343541] z-10">
-        Sontil AI (Llama & GPT)
+    <header class="p-4 border-b border-gray-600 text-center font-bold text-xl bg-[#343541] shadow-md">
+        Sontil AI Chat
     </header>
 
     <div id="chat-box" class="overflow-y-auto p-4 flex flex-col gap-4">
         <div class="bg-gray-700 p-3 rounded-lg max-w-[85%] shadow-md border-l-4 border-gray-500">
-            Selamat datang di <b>ai.sontil.eu.org</b>! Silakan ketik pesan kamu di bawah.
+            Halo! Saya AI di <b>ai.sontil.eu.org</b>. Ada yang bisa saya bantu?
         </div>
     </div>
 
-    <div class="p-4 pb-12 bg-[#343541] border-t border-gray-600 shadow-2xl">
-        <div class="max-w-4xl mx-auto flex flex-col gap-2">
+    <div class="p-4 pb-32 bg-[#343541] border-t border-gray-600 shadow-2xl">
+        <div class="max-w-4xl mx-auto flex flex-col gap-3">
             <div class="flex gap-2">
                 <input id="user-input" type="text" 
-                       class="flex-1 p-3 rounded-xl bg-gray-700 border border-gray-600 outline-none focus:border-green-500 transition-all text-white shadow-inner" 
+                       class="flex-1 p-4 rounded-2xl bg-gray-700 border border-gray-600 outline-none focus:border-green-500 transition-all text-white shadow-inner" 
                        placeholder="Tanya sesuatu dan tekan Enter..."
                        autocomplete="off">
-                <button onclick="send()" class="bg-green-600 px-6 py-2 rounded-xl font-bold hover:bg-green-700 transition-all active:scale-95 shadow-lg">
+                <button onclick="send()" class="bg-green-600 px-6 py-2 rounded-2xl font-bold hover:bg-green-700 transition-all active:scale-95 shadow-lg">
                     Kirim
                 </button>
             </div>
-            <p class="text-center text-[10px] text-gray-400">Status: Bot is Healthy & Powered by Groq</p>
+            <p class="text-center text-[12px] text-gray-400 font-semibold tracking-wider">
+                Status: Bot is active & <span class="text-green-500">Powered by Sontil</span>
+            </p>
         </div>
     </div>
 
@@ -65,33 +59,24 @@
         const inputField = document.getElementById('user-input');
         const box = document.getElementById('chat-box');
 
-        // Fungsi Deteksi Tombol Enter
-        inputField.addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                send();
-            }
+        inputField.addEventListener("keypress", (e) => { 
+            if (e.key === "Enter") { e.preventDefault(); send(); } 
         });
 
         async function send() {
             const msg = inputField.value.trim();
             if (!msg) return;
-
             inputField.value = '';
 
-            // Tampilkan Pesan User
-            box.innerHTML += `
-                <div class="bg-blue-600 p-3 rounded-lg self-end ml-auto max-w-[85%] shadow-md text-white">
-                    ${msg}
-                </div>`;
+            // User Message
+            box.innerHTML += `<div class="bg-blue-600 p-3 rounded-lg self-end ml-auto max-w-[85%] shadow-md">${msg}</div>`;
             
-            // Loading Indicator
+            // Loading
             const loadingId = "loading-" + Date.now();
             box.innerHTML += `
                 <div id="${loadingId}" class="bg-gray-700 p-3 rounded-lg max-w-[85%] shadow-md">
                     <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
                 </div>`;
-            
             box.scrollTop = box.scrollHeight;
 
             try {
@@ -100,21 +85,17 @@
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({message: msg})
                 });
-                
                 const data = await res.json();
-                
-                // Hapus loading
                 document.getElementById(loadingId).remove();
 
-                // Tampilkan Jawaban AI
+                // AI Response
                 box.innerHTML += `
-                    <div class="bg-gray-700 p-3 rounded-lg max-w-[85%] shadow-md border-l-4 border-green-500 animate-in fade-in duration-500">
+                    <div class="bg-gray-700 p-3 rounded-lg max-w-[85%] shadow-md border-l-4 border-green-500">
                         <b class="text-green-400">[${data.model}]:</b><br>${data.reply}
                     </div>`;
-                
                 box.scrollTop = box.scrollHeight;
             } catch (error) {
-                document.getElementById(loadingId).innerHTML = `<span class="text-red-400 italic">Gagal terhubung ke server.</span>`;
+                document.getElementById(loadingId).innerHTML = `<span class="text-red-400 italic">Koneksi terputus.</span>`;
             }
         }
     </script>
