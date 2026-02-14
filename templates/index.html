@@ -3,214 +3,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sontil AI - Gemini & MP3 Tools</title>
-    <meta name="description" content="Portal AI & Video Tools di ai.sontil.eu.org. Chatbot pintar, MP3 to Video Lirik, dan Artikel Gemini. Powered by Sontil.">
+    <title>SONTIL AI</title>
     
     <script src="https://pl28710734.effectivegatecpm.com/0e/56/5d/0e565d7c5c5ab381e354dd8283b27e86.js"></script>
-
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
-        
         body { background-color: #343541; color: white; margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
         .hidden-section { display: none !important; }
-        
-        /* Nav Styling */
         nav button.active { color: #60a5fa; border-bottom: 2px solid #60a5fa; }
-
-        /* Chat Styling */
         #chat-container { height: calc(100vh - 64px); display: flex; flex-direction: column; }
-        #chat-box { flex: 1; overflow-y: auto; padding: 20px; }
+        #chat-box { flex: 1; overflow-y: auto; padding: 20px; scroll-behavior: smooth; }
         
         /* Video Lirik Styling */
-        .canvas-container { background: #000; position: relative; overflow: hidden; border-radius: 2rem; border: 4px solid rgba(255, 255, 255, 0.1); }
-        .mode-9-16 { aspect-ratio: 9 / 16; width: 300px; }
+        .canvas-container { background: #000; position: relative; overflow: hidden; border-radius: 2rem; border: 4px solid rgba(255, 255, 255, 0.1); box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5); }
+        .mode-9-16 { aspect-ratio: 9 / 16; width: 280px; }
         .mode-16-9 { aspect-ratio: 16 / 9; width: 100%; max-width: 600px; }
-        .glass-panel { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .glass-panel { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .ratio-btn.active { background: #6366f1; color: white; }
 
-        .typing-dot { display: inline-block; width: 6px; height: 6px; background: #3b82f6; border-radius: 50%; margin-right: 3px; animation: wave 1.3s linear infinite; }
-        @keyframes wave { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
+        /* Artikel Styling */
+        .article-body { line-height: 1.8; color: #d1d5db; text-align: justify; }
+        .article-body h2 { color: #60a5fa; font-size: 1.5rem; font-weight: 700; margin-top: 2rem; margin-bottom: 1rem; text-transform: uppercase; }
+        .article-body p { margin-bottom: 1.2rem; }
     </style>
 </head>
 <body>
 
     <nav class="sticky top-0 z-50 bg-[#202123] border-b border-gray-700 px-6 py-4 flex justify-between items-center h-[64px]">
-        <div class="flex items-center gap-2 cursor-pointer" onclick="showSection('chat')">
-            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white shadow-lg">S</div>
-            <span class="font-bold text-xl tracking-tight hidden md:block">Sontil AI</span>
+        <div class="flex items-center gap-2 cursor-pointer group" onclick="goHome()">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white shadow-lg group-hover:bg-blue-500 transition-all">S</div>
+            <span class="font-bold text-xl tracking-tight group-hover:text-blue-400 transition-all">SONTIL AI</span>
         </div>
-        <div class="flex gap-4 md:gap-6 text-[10px] md:text-sm font-bold uppercase tracking-widest">
+        <div class="flex gap-4 md:gap-6 text-[10px] md:text-xs font-bold uppercase tracking-widest">
             <button onclick="showSection('chat')" id="nav-chat" class="active pb-1 transition-all">Chat AI</button>
             <button onclick="showSection('video')" id="nav-video" class="text-gray-400 hover:text-white pb-1 transition-all">MP3 TO VIDEO LIRIK</button>
             <button onclick="showSection('artikel')" id="nav-artikel" class="text-gray-400 hover:text-white pb-1 transition-all">Artikel</button>
         </div>
     </nav>
 
-    <section id="section-chat" class="animate-fadeIn">
+    <section id="section-chat">
         <div id="chat-container">
             <div id="chat-box" class="flex flex-col gap-4 text-sm">
-                <div class="bg-gray-700 p-4 rounded-xl max-w-[85%] border-l-4 border-blue-500">
-                    Halo! Kamu bisa menggunakan <b>Chat AI</b> atau beralih ke menu <b>MP3 TO VIDEO LIRIK</b> untuk membuat konten video secara instan.
+                <div class="bg-gray-700 p-4 rounded-xl max-w-[85%] border-l-4 border-blue-500 shadow-md">
+                    Halo! Selamat datang di <b>SONTIL AI</b>. Ada yang bisa saya bantu hari ini?
                 </div>
             </div>
             <div class="p-6 bg-[#343541] border-t border-gray-700">
-                <div class="max-w-4xl mx-auto flex flex-col gap-3">
-                    <div class="flex gap-3">
-                        <input id="user-input" type="text" class="flex-1 p-4 rounded-xl bg-gray-700 border border-gray-600 text-white outline-none focus:border-blue-500" placeholder="Tanya Sontil AI...">
-                        <button onclick="send()" class="bg-blue-600 px-6 py-2 rounded-xl font-bold shadow-lg">Kirim</button>
-                    </div>
-                    <div class="text-center text-[10px] text-gray-500 font-bold uppercase tracking-widest">Powered by Sontil</div>
+                <div class="max-w-4xl mx-auto flex gap-3">
+                    <input id="user-input" type="text" class="flex-1 p-4 rounded-xl bg-gray-700 border border-gray-600 outline-none focus:border-blue-500" placeholder="Tanya Sontil AI...">
+                    <button onclick="send()" class="bg-blue-600 px-6 py-2 rounded-xl font-bold shadow-lg">Kirim</button>
                 </div>
             </div>
         </div>
     </section>
 
     <section id="section-video" class="hidden-section bg-[#020617] min-h-screen p-4 md:p-8">
-        <div class="max-w-7xl mx-auto space-y-8">
-            <div class="glass-panel p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-4">
-                <h1 class="text-lg font-black italic tracking-tighter uppercase">MP3 TO <span class="text-indigo-400">VIDEO LIRIK</span></h1>
+        <div class="max-w-7xl mx-auto space-y-6">
+            <div class="glass-panel p-6 rounded-[2rem] flex justify-between items-center">
+                <h1 class="text-lg font-black italic uppercase">SONTIL <span class="text-indigo-400">VIDEO MAKER</span></h1>
                 <div class="flex bg-black/40 p-1 rounded-xl">
                     <button onclick="setRatio('9:16')" id="ratio916" class="ratio-btn active px-4 py-2 rounded-lg text-[10px] font-bold">9:16</button>
                     <button onclick="setRatio('16:9')" id="ratio169" class="ratio-btn px-4 py-2 rounded-lg text-[10px] font-bold ml-1">16:9</button>
                 </div>
             </div>
-
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                 <div class="flex flex-col items-center gap-6">
                     <div id="container" class="canvas-container mode-9-16">
                         <canvas id="videoCanvas" width="720" height="1280"></canvas>
-                        <div id="loadingOverlay" class="hidden absolute inset-0 bg-black/90 flex flex-col items-center justify-center z-50">
+                        <div id="loadingOverlay" class="hidden absolute inset-0 bg-black/95 flex flex-col items-center justify-center z-50">
                             <div class="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-                            <p class="text-[10px] font-bold mt-4 tracking-widest uppercase">Memproses Video...</p>
+                            <p class="text-[10px] font-bold mt-4 tracking-widest text-indigo-400 uppercase">Proses Ekspor...</p>
                         </div>
                     </div>
-                    <div class="w-full glass-panel p-4 rounded-2xl flex flex-col gap-4">
-                        <button id="playBtn" class="bg-white text-black py-3 rounded-xl font-bold text-xs uppercase">Play / Pause</button>
-                        <button id="exportBtn" class="bg-indigo-600 py-3 rounded-xl font-bold text-xs uppercase tracking-widest text-white">Ekspor Video</button>
+                    <div class="w-full glass-panel p-6 rounded-3xl flex flex-col gap-4">
+                        <div class="flex items-center gap-4">
+                            <button id="playBtn" class="w-14 h-14 bg-white text-black rounded-full flex items-center justify-center"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+                            <div class="flex-1 bg-white/10 h-1.5 rounded-full"><div id="progressBar" class="h-full bg-indigo-500 w-0 rounded-full"></div></div>
+                        </div>
+                        <button id="exportBtn" class="bg-indigo-600 py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-white">UNDUH VIDEO (.WEBM)</button>
                     </div>
                 </div>
-                
-                <div class="glass-panel p-6 rounded-3xl space-y-4">
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">Input Lagu & Cover</label>
-                        <input type="file" id="audioFile" accept="audio/*" class="w-full text-xs text-slate-400 file:bg-indigo-500 file:text-white file:rounded-lg file:border-0 file:px-4 file:py-1">
-                        <input type="file" id="coverFile" accept="image/*" class="w-full text-xs text-slate-400 file:bg-purple-500 file:text-white file:rounded-lg file:border-0 file:px-4 file:py-1">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">Sinkronisasi Lirik [detik] Teks</label>
-                        <textarea id="syncMap" rows="8" class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-[11px] font-mono text-indigo-200" placeholder="0 Lirik Mulai&#10;10 Lirik Reff..."></textarea>
-                    </div>
+                <div class="glass-panel p-6 rounded-3xl space-y-5">
+                    <input type="file" id="audioFile" accept="audio/*" class="w-full text-xs text-slate-400">
+                    <input type="file" id="coverFile" accept="image/*" class="w-full text-xs text-slate-400">
+                    <textarea id="syncMap" rows="10" class="w-full bg-black/40 border border-white/10 rounded-2xl p-4 text-[11px] font-mono text-indigo-200" placeholder="[00:01.00] Lirik lagu disini..."></textarea>
                 </div>
             </div>
         </div>
     </section>
 
     <section id="section-artikel" class="hidden-section bg-[#1a1b1e] p-8 md:p-16 min-h-screen">
-        <div class="max-w-3xl mx-auto article-content">
-            <h1 class="text-4xl font-black mb-10 border-b border-gray-800 pb-4">Evolusi Gemini Google</h1>
-            <p>Di <b>ai.sontil.eu.org</b>, kami menyatukan kecerdasan Gemini dengan alat kreatif seperti MP3 Video Maker...</p>
-            <p>Gemini adalah model bahasa multimodal terbaik saat ini yang memungkinkan interaksi teks dan visual secara real-time. Melalui platform ini, kami memudahkan akses tersebut untuk seluruh pengguna di Indonesia secara gratis.</p>
-            <footer class="mt-20 text-center text-gray-600 text-[10px] uppercase font-bold tracking-widest">Powered by Sontil</footer>
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-4xl font-black mb-8 border-b border-gray-800 pb-4 uppercase tracking-tighter">Evolusi Gemini di Sontil AI: Masa Depan Kreativitas Digital</h1>
+            
+            <div class="article-body">
+                <p>Dalam era transformasi digital yang berkembang pesat, kecerdasan buatan atau <i>Artificial Intelligence</i> (AI) telah menjadi pilar utama dalam memudahkan pekerjaan manusia. Salah satu terobosan terbesar adalah hadirnya <b>SONTIL AI</b>, sebuah platform inovatif yang mengintegrasikan kecerdasan model bahasa Gemini milik Google dengan peralatan kreatif digital.</p>
+
+                <h2>Apa itu SONTIL AI?</h2>
+                <p>SONTIL AI adalah portal berbasis web yang dirancang untuk memberikan akses gratis kepada masyarakat luas dalam berinteraksi dengan teknologi AI tercanggih. Melalui domain <b>ai.sontil.eu.org</b>, pengguna tidak hanya dapat melakukan percakapan cerdas melalui chatbot, tetapi juga dapat memanfaatkan fitur multimedia canggih seperti pembuatan video lirik otomatis dari file MP3.</p>
+
+                <h2>Integrasi Model Gemini Google</h2>
+                <p>Google Gemini membawa perubahan paradigma dalam cara AI memproses informasi. Tidak seperti model bahasa tradisional yang hanya fokus pada teks, Gemini bersifat multimodal. Artinya, ia mampu memahami teks, gambar, audio, hingga kode pemrograman secara bersamaan. Di dalam sistem SONTIL AI, teknologi ini diimplementasikan untuk memberikan respon chat yang lebih relevan, akurat, dan memiliki konteks yang mendalam layaknya berbicara dengan seorang ahli.</p>
+
+                <h2>Fitur Unggulan: MP3 to Video Lirik</h2>
+                <p>Keunikan utama SONTIL AI dibandingkan platform chat AI lainnya adalah hadirnya fitur <b>MP3 TO VIDEO LIRIK</b>. Fitur ini memungkinkan konten kreator, pecinta musik, atau pengguna umum untuk mengubah lagu favorit mereka menjadi video dengan lirik yang tersinkronisasi secara otomatis. Dengan pilihan rasio 9:16 untuk TikTok/Reels dan 16:9 untuk YouTube, SONTIL AI menjadi solusi instan bagi mereka yang ingin memproduksi konten visual berkualitas tinggi tanpa harus menguasai software editing yang rumit.</p>
+
+                <h2>Keamanan dan Kecepatan (System Healthy)</h2>
+                <p>Kami memahami bahwa pengalaman pengguna ditentukan oleh kecepatan respon dan stabilitas sistem. Oleh karena itu, SONTIL AI dikembangkan dengan arsitektur yang ringan namun bertenaga. Dengan status "System Healthy", pengguna dapat menikmati layanan chat tanpa kendala <i>lag</i> atau gangguan server. Selain itu, privasi pengguna tetap menjadi prioritas utama kami dalam setiap sesi interaksi.</p>
+
+                <h2>Masa Depan SONTIL AI</h2>
+                <p>Ke depan, SONTIL AI akan terus menambahkan berbagai fitur baru yang mendukung kreativitas digital. Mulai dari analisis data otomatis, pembuatan gambar berbasis AI, hingga integrasi API yang lebih luas. Tujuan kami sederhana: mendemokrasikan akses teknologi AI agar dapat digunakan oleh siapa saja, kapan saja, dan di mana saja tanpa biaya berlangganan yang mahal.</p>
+
+                <p>Bergabunglah bersama ribuan pengguna lainnya dan rasakan sendiri bagaimana kecerdasan buatan dapat mengubah cara Anda bekerja dan berkreasi. SONTIL AI bukan sekadar alat, melainkan partner cerdas di dunia digital.</p>
+                
+                <footer class="mt-16 pt-8 border-t border-gray-800 text-center text-gray-600 text-[10px] uppercase font-bold tracking-widest">
+                    &copy; 2026 SONTIL AI | Powered by Sontil Digital Network
+                </footer>
+            </div>
         </div>
     </section>
 
     <audio id="mainAudio" crossOrigin="anonymous"></audio>
 
     <script>
-        // FUNGSI NAVIGASI PINDAH MENU
         function showSection(type) {
             ['chat', 'video', 'artikel'].forEach(s => {
                 document.getElementById('section-' + s).classList.add('hidden-section');
-                document.getElementById('nav-' + s).classList.remove('active');
+                document.getElementById('nav-' + s).classList.remove('active', 'text-blue-400');
                 document.getElementById('nav-' + s).classList.add('text-gray-400');
             });
             document.getElementById('section-' + type).classList.remove('hidden-section');
-            document.getElementById('nav-' + type).classList.add('active');
-            document.getElementById('nav-' + type).classList.remove('text-gray-400');
-            window.scrollTo(0,0);
+            document.getElementById('nav-' + type).classList.add('active', 'text-blue-400');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // --- LOGIKA CHAT AI ---
+        function goHome() { showSection('chat'); }
+
         async function send() {
-            const input = document.getElementById('user-input');
+            const inputField = document.getElementById('user-input');
             const box = document.getElementById('chat-box');
-            if(!input.value.trim()) return;
-            const msg = input.value; input.value = '';
-            box.innerHTML += `<div class="bg-blue-600 p-3 rounded-xl self-end ml-auto max-w-[85%]">${msg}</div>`;
-            box.scrollTop = box.scrollHeight;
+            if(!inputField.value.trim()) return;
+            const msg = inputField.value; inputField.value = '';
+            box.innerHTML += `<div class="bg-blue-600 p-3 rounded-xl self-end ml-auto max-w-[85%] text-sm shadow-md">${msg}</div>`;
             try {
                 const res = await fetch('/ask', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({message: msg}) });
                 const data = await res.json();
-                box.innerHTML += `<div class="bg-gray-700 p-4 rounded-xl max-w-[85%] border-l-4 border-blue-500"><b>[${data.model}]:</b><div class="mt-2">${marked.parse(data.reply)}</div></div>`;
+                box.innerHTML += `<div class="bg-gray-700 p-4 rounded-xl max-w-[85%] border-l-4 border-blue-500 text-sm mt-2 shadow-md"><b>SONTIL AI:</b><div class="mt-2 text-gray-200">${marked.parse(data.reply)}</div></div>`;
                 box.scrollTop = box.scrollHeight;
             } catch (e) { console.error(e); }
         }
 
-        // --- LOGIKA MP3 TO VIDEO LIRIK ---
+        // --- VIDEO ENGINE LOGIC ---
         const canvas = document.getElementById('videoCanvas');
         const ctx = canvas.getContext('2d');
         const audio = document.getElementById('mainAudio');
-        let coverImg = null, blurImg = null, lyrics = [], isPlaying = false, currentRatio = "9:16";
+        const syncMap = document.getElementById('syncMap');
+        let lyrics = [], isPlaying = false, coverImg = null, blurImg = null, scrollY = 0;
 
         function setRatio(r) {
-            currentRatio = r;
             const container = document.getElementById('container');
-            document.getElementById('ratio916').classList.toggle('active', r === '9:16');
-            document.getElementById('ratio169').classList.toggle('active', r === '16:9');
             if(r === '9:16') { container.className = "canvas-container mode-9-16"; canvas.width = 720; canvas.height = 1280; }
             else { container.className = "canvas-container mode-16-9"; canvas.width = 1280; canvas.height = 720; }
+            document.getElementById('ratio916').classList.toggle('active', r === '9:16');
+            document.getElementById('ratio169').classList.toggle('active', r === '16:9');
             draw();
-        }
-
-        function createBlurEffect(img) {
-            const t = document.createElement('canvas'); t.width = 160; t.height = 90;
-            const tc = t.getContext('2d'); tc.filter = 'blur(10px) brightness(0.4)';
-            tc.drawImage(img, 0, 0, 160, 90); blurImg = t;
         }
 
         function draw() {
             const W = canvas.width, H = canvas.height;
             ctx.fillStyle = '#020617'; ctx.fillRect(0,0,W,H);
             if(blurImg) ctx.drawImage(blurImg, 0,0,W,H);
-            
             if(coverImg) {
-                const size = W < H ? 400 : 300;
-                ctx.save();
-                ctx.beginPath(); ctx.arc(W/2, H/3, size/2, 0, Math.PI*2); ctx.clip();
-                ctx.drawImage(coverImg, W/2 - size/2, H/3 - size/2, size, size);
-                ctx.restore();
+                const size = W < H ? 450 : 350;
+                ctx.save(); ctx.beginPath(); ctx.arc(W/2, H/3, size/2, 0, Math.PI*2); ctx.clip();
+                ctx.drawImage(coverImg, W/2 - size/2, H/3 - size/2, size, size); ctx.restore();
             }
-
-            // Simple Lyric Display
             const now = audio.currentTime;
-            let activeText = "";
-            lyrics.forEach(l => { if(now >= l.time) activeText = l.text; });
-            
-            ctx.fillStyle = "white"; ctx.font = "bold 40px 'Plus Jakarta Sans'"; ctx.textAlign = "center";
-            ctx.fillText(activeText.toUpperCase(), W/2, H * 0.75);
+            let activeIdx = -1;
+            lyrics.forEach((l, i) => { if(now >= l.time) activeIdx = i; });
+            if(lyrics.length > 0) {
+                const centerY = H * 0.7, spacing = 80;
+                scrollY += (activeIdx * spacing - scrollY) * 0.1;
+                ctx.textAlign = 'center';
+                lyrics.forEach((l, i) => {
+                    const y = centerY + (i * spacing) - scrollY;
+                    ctx.globalAlpha = Math.max(0, 1 - Math.abs(y - centerY)/300);
+                    ctx.font = i === activeIdx ? "800 45px 'Plus Jakarta Sans'" : "700 32px 'Plus Jakarta Sans'";
+                    ctx.fillStyle = i === activeIdx ? "#818cf8" : "rgba(255,255,255,0.3)";
+                    ctx.fillText(l.text.toUpperCase(), W/2, y);
+                });
+            }
+            if(audio.duration) document.getElementById('progressBar').style.width = (audio.currentTime/audio.duration)*100 + "%";
         }
 
         document.getElementById('audioFile').onchange = (e) => audio.src = URL.createObjectURL(e.target.files[0]);
         document.getElementById('coverFile').onchange = (e) => {
-            const img = new Image(); img.onload = () => { coverImg = img; createBlurEffect(img); draw(); };
+            const img = new Image(); img.onload = () => {
+                coverImg = img;
+                const t = document.createElement('canvas'); t.width = 160; t.height = 90;
+                const tc = t.getContext('2d'); tc.filter = 'blur(10px) brightness(0.3)';
+                tc.drawImage(img, 0, 0, 160, 90); blurImg = t;
+                draw();
+            };
             img.src = URL.createObjectURL(e.target.files[0]);
         };
-        document.getElementById('syncMap').oninput = (e) => {
-            lyrics = e.target.value.split('\n').map(l => {
-                const m = l.match(/^(\d+)\s+(.*)/);
-                return m ? { time: parseInt(m[1]), text: m[2] } : null;
-            }).filter(x => x);
+        syncMap.oninput = () => {
+            lyrics = syncMap.value.split('\n').map(line => {
+                const m = line.match(/\[(\d+):(\d+\.\d+)\]\s*(.*)/);
+                if (m) return { time: parseInt(m[1]) * 60 + parseFloat(m[2]), text: m[3].trim() };
+                return null;
+            }).filter(x => x).sort((a,b) => a.time - b.time);
         };
         document.getElementById('playBtn').onclick = () => {
-            if(audio.paused) { audio.play(); isPlaying = true; loop(); } else { audio.pause(); isPlaying = false; }
+            if(audio.paused) { audio.play(); isPlaying = true; (function loop() { if(isPlaying){draw();requestAnimationFrame(loop);}})(); } 
+            else { audio.pause(); isPlaying = false; }
         };
-        function loop() { if(isPlaying) { draw(); requestAnimationFrame(loop); } }
-        
-        // Inisialisasi
-        setRatio("9:16");
+        document.getElementById('exportBtn').onclick = () => {
+            const stream = canvas.captureStream(30);
+            const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+            const chunks = [];
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            recorder.ondataavailable = e => chunks.push(e.data);
+            recorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'video/webm' });
+                const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'sontil.webm'; a.click();
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            };
+            audio.currentTime = 0; audio.play(); recorder.start();
+            audio.onended = () => recorder.stop();
+        };
+        window.onload = () => setRatio("9:16");
     </script>
 </body>
 </html>
